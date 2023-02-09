@@ -1,7 +1,10 @@
-// Leo Liang
-// 1/23/2023
-// CS5700
-// Create Cipher
+/*
+* cipher.c
+* 
+* Leo Liang / CS5600 / Northeastern University
+* Spring 2023 / Feb 8, 2023
+*
+*/
 
 #include <math.h>
 #include <stdio.h>
@@ -15,6 +18,7 @@
 struct thread_args {
     const char *plaintext;
     const char *des;
+    const char *inputname;
     int number;
 };
 
@@ -54,9 +58,11 @@ char* pbEncode(const char *plaintext, char table[5][5]) {
 void *run(void *arg) {
     // create polybius table as martix 
     char table[5][5] = {{'A','B','C','D','E'},{'F','G','H','I','K'},{'L','M','N','O','P'},{'Q','R','S','T','U'},{'V','W','X','Y','Z'}};
+    // get argument from main function
     struct thread_args *args = (struct thread_args *)arg;
     const char *plaintext = args->plaintext;
     const char *des = args->des;
+    const char *inputname = args->inputname;
     int number = args->number;
 
     // Create the directory if it doesn't exist
@@ -65,9 +71,10 @@ void *run(void *arg) {
         mkdir(des, 0700);
     }
 
-    char filename[100];
-    snprintf(filename, 100, "%s/file_%d.txt", des, number);
-    FILE *f = fopen(filename, "a");
+    // create and overwrite file
+    char filename[50];
+    snprintf(filename, 50, "%s/%s_%d.txt", des, inputname, number);
+    FILE *f = fopen(filename, "w");
     if (f == NULL) {
         printf("Error opening file!\n");
         return NULL;
@@ -80,6 +87,5 @@ void *run(void *arg) {
     fclose(f);
     // free the space used by the cipertext
     free(temp);
-    pthread_exit(NULL);
     return NULL;
 }
