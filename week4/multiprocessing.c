@@ -72,7 +72,11 @@ int main(int argc, char *argv[]) {
         printf("Q4 is working\n");
         pthread_t t[i];
         // create thread
-        for (int j = 0; j < 31; j++) {
+        if (i == 0) {
+            struct thread_args args = {arr[0], "Q4", argv[2], 1};
+            pthread_create(&t[0], NULL, run, &args); 
+        }
+        for (int j = 0; j < i; j++) {
             struct thread_args args = {arr[j], "Q4", argv[2], j + 1};
             if (pthread_create(&t[j], NULL, run, &args)) {
                 printf("Error creating thread\n");
@@ -82,7 +86,7 @@ int main(int argc, char *argv[]) {
         }   
         sleep(5);
         // wait till all thread finished
-        for (int j = 0; j < 31; j++) {
+        for (int j = 0; j < i; j++) {
             if (pthread_join(t[j], NULL)) {
                 printf("Error joining thread\n");
                 return 1;

@@ -10,6 +10,7 @@ mode:
 filename:
     This is the file we want to encode
         simply type in the name of the file
+    If file is empty only one empty cipher file will be outputed
 
 Example:
     ./multiprocessing Q3 myfile.txt
