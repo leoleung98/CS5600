@@ -19,16 +19,15 @@ void* pm_malloc(size_t size) {
     void* result = NULL;
     size_t i, parent, child;
 
-    pthread_mutex_lock(&mutex); // Acquire the mutex lock
-
-    // Check for integer overflow 
-    if (size > (size_t)-1 - pm_heap_used) {
-        pthread_mutex_unlock(&mutex); // Release the mutex lock
+    // Check for zero size allocation
+    if (size == 0) {
         return NULL;
     }
 
+    pthread_mutex_lock(&mutex); // Acquire the mutex lock
+
     // Check if the pm-heap has enough space 
-    if (pm_heap_used + size > PM_HEAP_SIZE) {
+    if (size > PM_HEAP_SIZE - pm_heap_used) {
         pthread_mutex_unlock(&mutex); // Release the mutex lock
         return NULL;
     }
@@ -79,6 +78,9 @@ void pm_free(void* ptr) {
         *((size_t*)p_index) = *((size_t*)(pm_heap + pm_heap_used));
     }
 
+    // Clear the memory block being freed 
+    *((size_t*)(pm_heap + pm_heap_used)) = 0;
+
     // Maintain the min-heap property 
     child = index;
     while (child > 0) {
@@ -101,3 +103,4 @@ void pm_free(void* ptr) {
     pthread_mutex_unlock(&mutex);
     return;
 }
+
